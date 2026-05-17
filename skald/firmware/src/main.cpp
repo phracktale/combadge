@@ -43,6 +43,46 @@ static void applyLed(bool on) {
   digitalWrite(LED_PIN, on ? LOW : HIGH);
 }
 
+// Traduit le code numérique de WiFi.status() en message lisible.
+static const char* wifiStatusText(wl_status_t status) {
+  switch (status) {
+    case WL_NO_SSID_AVAIL:
+      return "SSID introuvable (hors de portee ou pas en 2.4 GHz)";
+    case WL_CONNECT_FAILED:
+      return "echec d'authentification (mot de passe / WPA ?)";
+    case WL_CONNECTION_LOST:
+      return "connexion perdue";
+    case WL_DISCONNECTED:
+      return "deconnecte";
+    case WL_IDLE_STATUS:
+      return "inactif";
+    default:
+      return "autre";
+  }
+}
+
+// Diagnostic : scanne et logue les réseaux visibles. L'ESP32-S3 est
+// mono-bande 2,4 GHz : seuls des réseaux 2,4 GHz peuvent apparaître ici.
+static void scanNetworks() {
+  Serial.println(F("[Scan] Reseaux 2.4 GHz visibles "
+                    "(l'ESP32-S3 ne voit que le 2.4 GHz) :"));
+  int found = WiFi.scanNetworks();
+  if (found <= 0) {
+    Serial.println(F("[Scan] Aucun reseau detecte."));
+    return;
+  }
+  for (int i = 0; i < found; i++) {
+    Serial.printf("  %2d) %-32s  RSSI %4d dBm  canal %2d  %s\n",
+                  i + 1,
+                  WiFi.SSID(i).c_str(),
+                  WiFi.RSSI(i),
+                  WiFi.channel(i),
+                  WiFi.encryptionType(i) == WIFI_AUTH_OPEN ? "ouvert"
+                                                           : "chiffre");
+  }
+  WiFi.scanDelete();
+}
+
 void setup() {
   pinMode(LED_PIN, OUTPUT);
   applyLed(false);
@@ -63,9 +103,13 @@ void setup() {
     return;
   }
 
-  Serial.print(F("[WiFi] Connexion a "));
-  Serial.println(WIFI_SSID);
   WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  scanNetworks();
+
+  Serial.print(F("[WiFi] SSID cible : "));
+  Serial.println(WIFI_SSID);
+  Serial.println(F("[WiFi] Connexion en cours..."));
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
   // Attente non bloquante pour le reste : on continue à faire vivre la LED
@@ -81,7 +125,8 @@ void setup() {
     Serial.print(F("[WiFi] Connecte. IP : "));
     Serial.println(WiFi.localIP());
   } else {
-    Serial.println(F("[WiFi] Echec de connexion (timeout). Le blink continue."));
+    Serial.printf("[WiFi] Echec (timeout). Code %d : %s. Le blink continue.\n",
+                  WiFi.status(), wifiStatusText(WiFi.status()));
   }
 }
 

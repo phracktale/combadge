@@ -23,6 +23,9 @@ flash, logs et radio fonctionnent. Aucune capture audio ici.
 - Clignotement LED à 1 Hz (500 ms allumée / 500 ms éteinte).
 - Log série à 115200 bauds : bannière de démarrage, état Wi-Fi, IP.
 - Connexion Wi-Fi station avec retry et log d'échec explicite.
+- **Scan diagnostic** : liste des réseaux 2,4 GHz visibles (SSID, RSSI,
+  canal, chiffrement) + code d'état Wi-Fi numérique en cas d'échec.
+  Rappel : l'ESP32-S3 ne voit que le 2,4 GHz.
 
 ### Exclus (hors périmètre)
 
@@ -84,9 +87,19 @@ bloquer le hello world sur de la soudure.
 
 1. Scaffolding PlatformIO (`platformio.ini` ciblant le XIAO ESP32-S3).
 2. `secrets.example.h` commité, `secrets.h` réel exclu du dépôt.
-3. `main.cpp` : `blinkState`, `wifiConfigValid`, `setup`/`loop` câblant
-   GPIO21 et le Wi-Fi.
+3. `main.cpp` : `blinkState`, `wifiConfigValid`, `scanNetworks`,
+   `wifiStatusText`, `setup`/`loop` câblant GPIO21 et le Wi-Fi.
 4. Vérification manuelle des critères A1–A6 sur carte réelle.
+
+### Diagnostic Wi-Fi
+
+Au démarrage, avant la tentative de connexion, le firmware scanne et logue
+les réseaux 2,4 GHz visibles (l'ESP32-S3 est mono-bande 2,4 GHz). En cas
+d'échec, il logue le code `WiFi.status()` traduit. Interprétation :
+
+- SSID cible **absent** du scan → face 2,4 GHz non joignable (band steering,
+  2,4 GHz désactivé sur la box, ou hors de portée).
+- SSID cible **présent** mais code « échec auth » → mot de passe / WPA.
 
 ## 8. Sources
 
