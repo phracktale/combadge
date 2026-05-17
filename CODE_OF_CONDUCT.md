@@ -62,7 +62,7 @@ Les comportements abusifs, harcelants ou autrement inacceptables peuvent être
 signalés aux responsables de la communauté chargés de l'application à l'adresse
 suivante :
 
-**[À DÉFINIR — adresse de contact pour signalement]**
+**thierry@phracktale.com**
 
 Toutes les plaintes seront examinées et feront l'objet d'une enquête rapide et
 équitable. Tous les responsables de la communauté sont tenus de respecter la

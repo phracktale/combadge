@@ -28,7 +28,7 @@ discussion ou une pull request.
 
 Procédure de divulgation responsable :
 
-1. Envoyer un rapport à : **[À DÉFINIR — adresse de contact sécurité]**
+1. Envoyer un rapport à : **thierry@phracktale.com**
    (ou utiliser l'option *Report a vulnerability* de l'onglet *Security* du
    dépôt GitHub si elle est activée).
 2. Inclure si possible :
