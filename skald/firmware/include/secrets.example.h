@@ -10,3 +10,9 @@
 
 #define WIFI_SSID     "VOTRE_SSID"
 #define WIFI_PASSWORD "VOTRE_MOT_DE_PASSE"
+
+// Backend d'ingestion Skald : URL complète de l'endpoint d'upload (HTTPS) et
+// Bearer token protégeant l'API. Récupérer le token sur Thor :
+//   ssh thor 'grep ^SKALD_API_TOKEN /opt/skald/.env'
+#define SKALD_API_URL   "https://api.skald.phracktale.com/api/recordings"
+#define SKALD_API_TOKEN "VOTRE_TOKEN"
