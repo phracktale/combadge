@@ -1,0 +1,21 @@
+# PlatformIO / firmware
+skald/firmware/.pio/
+skald/firmware/.vscode/
+
+# Symfony / PHP
+skald/backend/vendor/
+skald/backend/var/
+skald/backend/.env.local
+
+# Python pipeline
+skald/pipeline/.venv/
+skald/pipeline/__pycache__/
+skald/pipeline/*.egg-info/
+
+# Flutter
+skald/mobile/.dart_tool/
+skald/mobile/build/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
