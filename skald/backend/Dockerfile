@@ -33,6 +33,9 @@ RUN { \
         echo 'upload_max_filesize = 256M'; \
         echo 'post_max_size = 256M'; \
         echo 'memory_limit = 256M'; \
+        # Peuple $_ENV : Symfony doit voir les variables Docker (APP_ENV,
+        # DATABASE_URL...) en priorité sur le fichier .env du squelette.
+        echo 'variables_order = "EGPCS"'; \
     } > "$PHP_INI_DIR/conf.d/skald.ini"
 
 # FrankenPHP sert public/ et écoute en 80/443 (Caddy interne).
