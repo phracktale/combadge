@@ -109,9 +109,11 @@ Limites PHP à relever pour l'audio long :
 
 ## 6. Sécurité v0.1 (décisions à acter)
 
-- **Pas d'authentification** sur l'API en v0.1 (dev/local). À durcir avant
-  toute exposition publique réelle (token device, ou mTLS). Documenté ici
-  comme dette explicite, alignée sur `SECURITY.md`.
+- **Authentification : Bearer token sur tout `/api/*`** (en-tête
+  `Authorization: Bearer <SKALD_API_TOKEN>`), via `BearerTokenSubscriber`.
+  `/health` reste public (sonde). Secret partagé unique, rotable par l'env
+  sans redéploiement de code. Fail-closed si le token n'est pas configuré.
+  Évolution possible vers une auth par device (cf. `SECURITY.md`).
 - Postgres : binding `192.168.1.36` (LAN only), jamais exposé Internet.
 - Secrets (`POSTGRES_PASSWORD`, `APP_SECRET`) générés sur Thor par
   `bootstrap.sh` (`openssl rand`), jamais commités.
