@@ -1,0 +1,46 @@
+
+services:
+  # Backend Skald (FrankenPHP : Caddy + PHP). TLS interne en local.
+  app:
+    build: .
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      # prod EN DUR : l'image est buildée --no-dev, et docker compose
+      # interpole sinon APP_ENV depuis le .env Symfony (=dev) → collision.
+      APP_ENV: "prod"
+      APP_SECRET: ${APP_SECRET:-dev-only-change-me}
+      SERVER_NAME: ${SERVER_NAME:-localhost}
+      CADDY_TLS: internal
+      DATABASE_URL: postgresql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-!ChangeMe!}@database:5432/${POSTGRES_DB:-app}?serverVersion=16&charset=utf8
+    ports:
+      - "8090:80"
+      - "8453:443"
+    volumes:
+      - skald_uploads:/app/var/uploads
+
+###> doctrine/doctrine-bundle ###
+  database:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      # You should definitely change the password in production
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/db/data:/var/lib/postgresql/data:rw
+###< doctrine/doctrine-bundle ###
+
+volumes:
+  skald_uploads:
+###> doctrine/doctrine-bundle ###
+  database_data:
+###< doctrine/doctrine-bundle ###
