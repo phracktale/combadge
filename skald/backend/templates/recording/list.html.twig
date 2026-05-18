@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Enregistrements — Skald{% endblock %}
+
+{% block body %}
+<main>
+    <h1>Enregistrements Skald</h1>
+    <p><a href="{{ path('app_logout') }}">Se déconnecter</a></p>
+
+    {% if recordings is empty %}
+        <p>Aucun enregistrement pour l’instant.</p>
+    {% else %}
+    <table>
+        <caption>{{ recordings|length }} enregistrement(s), du plus récent au plus ancien</caption>
+        <thead>
+            <tr>
+                <th scope="col">Reçu le</th>
+                <th scope="col">Capturé le</th>
+                <th scope="col">Device</th>
+                <th scope="col">Taille</th>
+                <th scope="col">Écoute</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for r in recordings %}
+            <tr>
+                <td>{{ r.uploadedAt|date('d/m/Y H:i:s', 'Europe/Paris') }}</td>
+                <td>{{ r.recordedAt ? r.recordedAt|date('d/m/Y H:i:s', 'Europe/Paris') : '—' }}</td>
+                <td>{{ r.deviceId ?? '—' }}</td>
+                <td>{{ (r.sizeBytes / 1024)|round }} ko</td>
+                <td>
+                    <audio controls preload="none"
+                           aria-label="Enregistrement du {{ r.uploadedAt|date('d/m/Y à H:i', 'Europe/Paris') }}">
+                        <source src="{{ path('app_audio', {id: r.id}) }}" type="{{ r.mimeType }}">
+                        Votre navigateur ne peut pas lire cet audio.
+                        <a href="{{ path('app_audio', {id: r.id}) }}">Télécharger le fichier</a>.
+                    </audio>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</main>
+{% endblock %}
