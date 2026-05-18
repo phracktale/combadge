@@ -2,7 +2,10 @@
 services:
   # Backend Skald (FrankenPHP : Caddy + PHP). TLS interne en local.
   app:
-    build: .
+    build:
+      # Contexte = racine du dépôt (besoin de docs/ pour la doc/wiki).
+      context: ../..
+      dockerfile: skald/backend/Dockerfile
     depends_on:
       database:
         condition: service_healthy

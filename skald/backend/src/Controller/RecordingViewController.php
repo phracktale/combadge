@@ -22,7 +22,7 @@ class RecordingViewController extends AbstractController
     ) {
     }
 
-    #[Route('/', name: 'app_recordings', methods: ['GET'])]
+    #[Route('/app', name: 'app_recordings', methods: ['GET'])]
     public function list(RecordingRepository $recordings): Response
     {
         return $this->render('recording/list.html.twig', [
@@ -30,7 +30,7 @@ class RecordingViewController extends AbstractController
         ]);
     }
 
-    #[Route('/audio/{id}', name: 'app_audio', methods: ['GET'])]
+    #[Route('/app/audio/{id}', name: 'app_audio', methods: ['GET'])]
     public function audio(string $id, RecordingRepository $recordings): Response
     {
         $recording = $recordings->find($id);

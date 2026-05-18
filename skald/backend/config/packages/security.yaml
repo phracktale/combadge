@@ -31,10 +31,11 @@ security:
 
     # Note: Only the *first* matching rule is applied
     access_control:
-        - { path: ^/api, roles: PUBLIC_ACCESS }      # protégé par BearerTokenSubscriber
-        - { path: ^/health, roles: PUBLIC_ACCESS }   # sonde
-        - { path: ^/login, roles: PUBLIC_ACCESS }    # connexion (magic-link)
-        - { path: ^/, roles: ROLE_USER }             # toute l'UI web
+        # L'app authentifiée vit sous /app ; tout le reste est public
+        # (landing /, doc /docs, login, API protégée par BearerTokenSubscriber,
+        # sonde /health).
+        - { path: ^/app, roles: ROLE_USER }
+        - { path: ^/, roles: PUBLIC_ACCESS }
 
 when@test:
     security:

@@ -1,0 +1,25 @@
+# Contexte de build = racine du dépôt (image backend Skald).
+# On ne garde que ce qui sert à l'image : skald/backend + docs/ + skald/docs/.
+
+.git
+**/.git
+_DOCS
+
+# Backend : dépendances/cache régénérés dans l'image
+skald/backend/vendor
+skald/backend/var
+skald/backend/.env.local
+skald/backend/.env.*.local
+skald/backend/node_modules
+
+# Firmware / autres projets : inutiles à l'image backend
+skald/firmware/.pio
+skald/firmware/.vscode
+skald/mobile
+skald/hardware
+shared
+
+# Divers
+**/__pycache__
+**/.DS_Store
+**/Thumbs.db

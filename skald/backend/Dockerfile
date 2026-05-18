@@ -1,46 +1,46 @@
 # Image de production Skald backend — FrankenPHP (Caddy + PHP intégrés).
-# Pattern aligné sur le homelab Phracktale (cf. tutoriel FrankenPHP).
-# TLS : géré par Caddy interne (CADDY_TLS=internal en LAN, vide en prod
-# derrière Heimdall qui termine le TLS public Let's Encrypt).
+#
+# Contexte de build = RACINE du dépôt combadge (pas skald/backend) : on a
+# besoin de docs/ et skald/docs/ dans l'image pour la doc/wiki rendue.
+#   build: { context: <repo-root>, dockerfile: skald/backend/Dockerfile }
+#
+# Tailwind compilé au build via symfonycasts/tailwind-bundle (binaire
+# standalone, pas de Node), puis assets figés (asset-map:compile).
 
 FROM dunglas/frankenphp:1-php8.3
 
-# Extensions PHP requises par Symfony 7 + Doctrine PostgreSQL.
-RUN install-php-extensions \
-        pdo_pgsql \
-        intl \
-        opcache \
-        zip
+RUN install-php-extensions pdo_pgsql intl opcache zip
 
 WORKDIR /app
+ENV APP_ENV=prod
 
-# Composer (binaire copié depuis l'image officielle).
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# 1) Dépendances d'abord (cache Docker tant que composer.* ne change pas).
-COPY composer.json composer.lock symfony.lock ./
+# 1) Dépendances d'abord (cache Docker tant que composer.* est inchangé).
+COPY skald/backend/composer.json skald/backend/composer.lock skald/backend/symfony.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-progress
 
-# 2) Code applicatif.
-COPY . .
+# 2) Code applicatif + doc du dépôt (source unique pour /docs).
+COPY skald/backend/ ./
+COPY docs/ ./dev-docs/
+COPY skald/docs/ ./dev-docs/skald/
+
 RUN composer dump-autoload --optimize --no-dev \
     && mkdir -p var/uploads \
-    && chown -R www-data:www-data var
+    # 3) Build CSS Tailwind (télécharge le binaire standalone) puis fige les assets.
+    && php bin/console tailwind:build --minify \
+    && php bin/console asset-map:compile \
+    && chown -R www-data:www-data var public
 
-ENV APP_ENV=prod
-# Limites d'upload relevées pour de l'audio long (spec §4).
+# Limites upload audio + $_ENV peuplé (Symfony lit les vars Docker).
 RUN { \
         echo 'upload_max_filesize = 256M'; \
         echo 'post_max_size = 256M'; \
         echo 'memory_limit = 256M'; \
-        # Peuple $_ENV : Symfony doit voir les variables Docker (APP_ENV,
-        # DATABASE_URL...) en priorité sur le fichier .env du squelette.
         echo 'variables_order = "EGPCS"'; \
     } > "$PHP_INI_DIR/conf.d/skald.ini"
 
-# FrankenPHP sert public/ et écoute en 80/443 (Caddy interne).
 EXPOSE 80 443
 
-# Healthcheck = la sonde applicative /health (ne touche pas la DB).
 HEALTHCHECK --interval=10s --timeout=5s --retries=5 \
     CMD curl -fsk https://localhost/health || curl -fs http://localhost/health || exit 1

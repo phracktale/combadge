@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }} — Doc Skald{% endblock %}
+
+{% block body %}
+<div class="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-[14rem_1fr]">
+    <nav aria-label="Sommaire" class="md:sticky md:top-20 md:self-start">
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Documents</p>
+        <ul class="mt-3 space-y-1 text-sm">
+            {% for slug, t in pages %}
+            <li>
+                <a class="block rounded px-2 py-1 {{ slug == current ? 'bg-indigo-600/20 text-indigo-300' : 'text-slate-400 hover:text-slate-200' }}"
+                   href="{{ path('app_doc_page', {slug: slug}) }}"{{ slug == current ? ' aria-current="page"' : '' }}>{{ t }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+    <article class="markdown min-w-0">
+        {{ html|raw }}
+    </article>
+</div>
+{% endblock %}

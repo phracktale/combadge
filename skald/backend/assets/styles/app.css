@@ -1,3 +1,55 @@
-body {
-    background-color: skyblue;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Apparition au scroll (animation discrète) ───────────────────────────── */
+@layer utilities {
+    .reveal {
+        opacity: 0;
+        transform: translateY(1.25rem);
+        transition: opacity .7s ease-out, transform .7s ease-out;
+        will-change: opacity, transform;
+    }
+    .reveal.is-visible {
+        opacity: 1;
+        transform: none;
+    }
+    /* Couche parallaxe : translation pilotée par --parallax (JS), discrète. */
+    .parallax {
+        transform: translate3d(0, var(--parallax, 0), 0);
+        will-change: transform;
+    }
+}
+
+/* ── Rendu markdown (doc/wiki) sans plugin typography ────────────────────── */
+@layer components {
+    .markdown { @apply leading-relaxed text-slate-200; }
+    .markdown h1 { @apply mt-2 mb-4 text-3xl font-bold; }
+    .markdown h2 { @apply mt-8 mb-3 border-b border-white/10 pb-1 text-2xl font-semibold; }
+    .markdown h3 { @apply mt-6 mb-2 text-xl font-semibold; }
+    .markdown p { @apply my-3; }
+    .markdown a { @apply text-indigo-400 underline; }
+    .markdown ul { @apply my-3 list-disc space-y-1 pl-6; }
+    .markdown ol { @apply my-3 list-decimal space-y-1 pl-6; }
+    .markdown code { @apply rounded bg-slate-800 px-1 py-0.5 text-sm; }
+    .markdown pre { @apply my-4 overflow-x-auto rounded-lg bg-slate-900 p-4 text-sm; }
+    .markdown pre code { @apply bg-transparent p-0; }
+    .markdown table { @apply my-4 w-full border-collapse text-sm; }
+    .markdown th, .markdown td { @apply border border-white/10 px-3 py-2 text-left; }
+    .markdown blockquote { @apply my-4 border-l-4 border-indigo-500/50 pl-4 text-slate-400; }
+}
+
+/* ── Accessibilité : aucune animation imposée (RGAA / OPQUAST) ───────────── */
+@media (prefers-reduced-motion: reduce) {
+    .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+    .parallax {
+        transform: none !important;
+    }
+    * {
+        scroll-behavior: auto !important;
+    }
 }
