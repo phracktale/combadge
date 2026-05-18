@@ -67,10 +67,10 @@ est streamé depuis la PSRAM, **sans dupliquer** les ~960 ko.
 
 ## 5. Risques techniques (à lever au build / au matériel)
 
-1. **arduino-esp32 ≥ 3.0** requis pour `ESP_I2S` (`I2SClass` PDM RX). Le
-   `platform = espressif32` PlatformIO par défaut fournit souvent une core
-   2.x. → `platformio.ini` cible la plateforme **pioarduino** (core 3.x) ;
-   **confirmé par B1** (le build dira si l'API compile).
+1. ~~arduino-esp32 ≥ 3.0 requis pour `ESP_I2S`.~~ **Résolu** : on utilise
+   l'API I2S **héritée** (`driver/i2s.h`, PDM RX), compatible avec la core
+   arduino-esp32 par défaut de PlatformIO — plus de dépendance pioarduino.
+   **B1 vert** : compilation OK (RAM 13,8 % / Flash 24,9 %).
 2. **Brochage Sense.** GPIO PDM CLK/DATA fixés matériellement par Seeed —
    constantes isolées, valeurs de l'exemple officiel Seeed, **à reconfirmer
    sur le wiki** avant flash (même rigueur que la LED du hello world).
