@@ -7,8 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
 
 /**
  * Authentification sans mot de passe (lien magique email).
@@ -37,25 +35,14 @@ class SecurityController extends AbstractController
         return $this->redirectToRoute('app_login');
     }
 
+    /**
+     * La connexion est gérée par MagicLinkAuthenticator (firewall), qui
+     * intercepte cette route, consomme le token et ouvre la session. Ce
+     * contrôleur n'est normalement pas atteint ; redirection défensive.
+     */
     #[Route('/login/check', name: 'app_login_check', methods: ['GET'])]
-    public function check(
-        Request $request,
-        MagicLinkService $magic,
-        TokenStorageInterface $tokenStorage,
-    ): Response {
-        $user = $magic->consume((string) $request->query->get('token', ''));
-        if ($user === null) {
-            $this->addFlash('error', 'Lien invalide ou expiré. Recommencez la connexion.');
-
-            return $this->redirectToRoute('app_login');
-        }
-
-        // Connexion programmatique (auth maison) : on pose le token de sécurité
-        // et on le persiste en session pour les requêtes suivantes.
-        $token = new PostAuthenticationToken($user, 'main', $user->getRoles());
-        $tokenStorage->setToken($token);
-        $request->getSession()->set('_security_main', serialize($token));
-
+    public function check(): Response
+    {
         return $this->redirectToRoute('app_recordings');
     }
 
