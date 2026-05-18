@@ -109,6 +109,11 @@ class MagicLinkService
         $loginToken->markUsed($now);
         $this->em->flush();
 
-        return $loginToken->getUser();
+        // Renvoie l'entité PLEINEMENT chargée, pas le proxy Doctrine de
+        // l'association : un proxy non initialisé sérialisé en session fait
+        // échouer getUserIdentifier() ($email non initialisé) sur les
+        // requêtes suivantes (500 sur /app). getId() n'initialise pas le
+        // proxy ; find() renvoie l'entité hydratée.
+        return $this->users->find($loginToken->getUser()->getId());
     }
 }

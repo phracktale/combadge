@@ -19,6 +19,8 @@ security:
             lazy: true
             provider: app_user_provider
             entry_point: App\Security\LoginEntryPoint
+            custom_authenticators:
+                - App\Security\MagicLinkAuthenticator
             logout:
                 path: app_logout
                 target: app_login

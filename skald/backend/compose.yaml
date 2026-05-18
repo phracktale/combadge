@@ -17,6 +17,9 @@ services:
       SERVER_NAME: ${SERVER_NAME:-localhost}
       CADDY_TLS: internal
       SKALD_API_TOKEN: ${SKALD_API_TOKEN:-dev-insecure-local-only}
+      SKALD_ALLOWED_EMAILS: ${SKALD_ALLOWED_EMAILS:-test@local.dev}
+      APP_BASE_URL: ${APP_BASE_URL:-https://localhost:8453}
+      MAILER_FROM: ${MAILER_FROM:-skald@local.dev}
       DATABASE_URL: postgresql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-!ChangeMe!}@database:5432/${POSTGRES_DB:-app}?serverVersion=16&charset=utf8
     ports:
       - "8090:80"
