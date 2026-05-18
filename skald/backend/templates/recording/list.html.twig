@@ -3,43 +3,85 @@
 {% block title %}Enregistrements — Skald{% endblock %}
 
 {% block body %}
-<main>
-    <h1>Enregistrements Skald</h1>
-    <p><a href="{{ path('app_logout') }}">Se déconnecter</a></p>
+<section class="mx-auto max-w-5xl px-4 py-12">
+    <div class="flex items-center justify-between gap-4">
+        <h1 class="text-2xl font-semibold">Enregistrements</h1>
+        <a class="text-sm text-slate-400 underline hover:text-slate-200" href="{{ path('app_logout') }}">Se déconnecter</a>
+    </div>
 
     {% if recordings is empty %}
-        <p>Aucun enregistrement pour l’instant.</p>
+        <p class="mt-8 text-slate-400">Aucun enregistrement pour l’instant.</p>
     {% else %}
-    <table>
-        <caption>{{ recordings|length }} enregistrement(s), du plus récent au plus ancien</caption>
-        <thead>
-            <tr>
-                <th scope="col">Reçu le</th>
-                <th scope="col">Capturé le</th>
-                <th scope="col">Device</th>
-                <th scope="col">Taille</th>
-                <th scope="col">Écoute</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for r in recordings %}
-            <tr>
-                <td>{{ r.uploadedAt|date('d/m/Y H:i:s', 'Europe/Paris') }}</td>
-                <td>{{ r.recordedAt ? r.recordedAt|date('d/m/Y H:i:s', 'Europe/Paris') : '—' }}</td>
-                <td>{{ r.deviceId ?? '—' }}</td>
-                <td>{{ (r.sizeBytes / 1024)|round }} ko</td>
-                <td>
-                    <audio controls preload="none"
-                           aria-label="Enregistrement du {{ r.uploadedAt|date('d/m/Y à H:i', 'Europe/Paris') }}">
-                        <source src="{{ path('app_audio', {id: r.id}) }}" type="{{ r.mimeType }}">
-                        Votre navigateur ne peut pas lire cet audio.
-                        <a href="{{ path('app_audio', {id: r.id}) }}">Télécharger le fichier</a>.
-                    </audio>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <form method="post" action="{{ path('app_recordings_delete') }}" class="mt-8">
+        <div class="mb-4 flex items-center gap-4">
+            <label class="flex items-center gap-2 text-sm">
+                <input type="checkbox" id="select-all" aria-label="Tout sélectionner">
+                Tout sélectionner
+            </label>
+            <button type="submit"
+                    class="rounded-md bg-rose-700 px-3 py-1.5 text-sm font-medium transition-colors hover:bg-rose-600 focus:outline-none focus:ring-2 focus:ring-rose-400">
+                Supprimer la sélection
+            </button>
+        </div>
+
+        <table class="w-full border-collapse text-sm">
+            <caption class="sr-only">{{ recordings|length }} enregistrement(s), du plus récent au plus ancien</caption>
+            <thead>
+                <tr class="border-b border-white/10 text-left text-slate-400">
+                    <th scope="col" class="py-2 pr-3"><span class="sr-only">Sélection</span></th>
+                    <th scope="col" class="py-2 pr-3">Reçu le</th>
+                    <th scope="col" class="py-2 pr-3">Capturé le</th>
+                    <th scope="col" class="py-2 pr-3">Device</th>
+                    <th scope="col" class="py-2 pr-3">Taille</th>
+                    <th scope="col" class="py-2 pr-3">Écoute</th>
+                    <th scope="col" class="py-2">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for r in recordings %}
+                <tr class="border-b border-white/5">
+                    <td class="py-2 pr-3">
+                        <input type="checkbox" name="ids[]" value="{{ r.id }}"
+                               id="sel-{{ r.id }}" class="row-check"
+                               aria-label="Sélectionner l’enregistrement du {{ r.uploadedAt|date('d/m/Y à H:i', 'Europe/Paris') }}">
+                    </td>
+                    <td class="py-2 pr-3">{{ r.uploadedAt|date('d/m/Y H:i:s', 'Europe/Paris') }}</td>
+                    <td class="py-2 pr-3">{{ r.recordedAt ? r.recordedAt|date('d/m/Y H:i:s', 'Europe/Paris') : '—' }}</td>
+                    <td class="py-2 pr-3">{{ r.deviceId ?? '—' }}</td>
+                    <td class="py-2 pr-3">{{ (r.sizeBytes / 1024)|round }} ko</td>
+                    <td class="py-2 pr-3">
+                        <audio controls preload="none"
+                               aria-label="Enregistrement du {{ r.uploadedAt|date('d/m/Y à H:i', 'Europe/Paris') }}">
+                            <source src="{{ path('app_audio', {id: r.id}) }}" type="{{ r.mimeType }}">
+                            <a href="{{ path('app_audio', {id: r.id}) }}">Télécharger</a>
+                        </audio>
+                    </td>
+                    <td class="py-2">
+                        <button type="submit" name="ids[]" value="{{ r.id }}" formnovalidate
+                                class="rounded border border-rose-500/40 px-2 py-1 text-xs text-rose-300 hover:bg-rose-900/30"
+                                aria-label="Supprimer l’enregistrement du {{ r.uploadedAt|date('d/m/Y à H:i', 'Europe/Paris') }}">
+                            Supprimer
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </form>
     {% endif %}
-</main>
+</section>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Amélioration progressive : « tout sélectionner ». Sans JS, on coche
+// chaque ligne manuellement (le formulaire reste fonctionnel).
+(function () {
+    var all = document.getElementById('select-all');
+    if (!all) return;
+    all.addEventListener('change', function () {
+        document.querySelectorAll('.row-check').forEach(function (c) { c.checked = all.checked; });
+    });
+})();
+</script>
 {% endblock %}
