@@ -11,6 +11,9 @@ skald/backend/var
 skald/backend/.env.local
 skald/backend/.env.*.local
 skald/backend/node_modules
+# Assets vendor : gitignorés (absents du clone Thor) -> régénérés au build
+# par `importmap:install`. Exclus ici pour que le build local = Thor.
+skald/backend/assets/vendor
 
 # Firmware / autres projets : inutiles à l'image backend
 skald/firmware/.pio
