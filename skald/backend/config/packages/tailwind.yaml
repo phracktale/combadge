@@ -1,0 +1,4 @@
+symfonycasts_tailwind:
+    # Tailwind v3 épinglé : syntaxe stable (@tailwind / @apply / @layer),
+    # évite les breaking changes de v4. v0.1 = prévisibilité (CLAUDE.md §5).
+    binary_version: '3.4.17'

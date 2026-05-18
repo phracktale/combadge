@@ -1,5 +1,8 @@
 twig:
     file_name_pattern: '*.twig'
+    globals:
+        # Lien GitHub disponible dans tous les templates (nav, footer).
+        github_url: 'https://github.com/phracktale/combadge'
 
 when@test:
     twig:

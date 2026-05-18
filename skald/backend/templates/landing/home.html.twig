@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Skald — votre compagnon IA portable, open source, sans abonnement{% endblock %}
+
+{% block body %}
+<section class="relative overflow-hidden">
+    <div data-parallax="0.2"
+         class="parallax pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-indigo-700/30 via-slate-950 to-slate-950"></div>
+    <div class="mx-auto max-w-4xl px-4 py-28 text-center">
+        <h1 class="text-4xl font-bold tracking-tight sm:text-6xl">Skald</h1>
+        <p class="mt-6 text-lg text-slate-300 sm:text-xl">
+            Un compagnon IA portable <strong>open source</strong> : il capte,
+            vous gardez vos données et choisissez votre IA. Sans abonnement,
+            sans cloud imposé.
+        </p>
+        <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <button type="button" data-open-login
+                    class="rounded-md bg-indigo-600 px-5 py-3 font-medium transition-colors hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                Se connecter
+            </button>
+            <a href="{{ path('app_docs') }}" class="rounded-md border border-white/15 px-5 py-3 font-medium transition-colors hover:bg-white/5">Doc développeur</a>
+            <a href="{{ github_url }}" target="_blank" rel="noopener noreferrer" class="rounded-md border border-white/15 px-5 py-3 font-medium transition-colors hover:bg-white/5">GitHub<span class="sr-only"> (nouvel onglet)</span></a>
+        </div>
+    </div>
+</section>
+
+<section class="mx-auto max-w-5xl px-4 py-16" aria-labelledby="etapes-title">
+    <h2 id="etapes-title" class="reveal text-center text-2xl font-semibold sm:text-3xl">Les étapes du projet</h2>
+    <ol class="mt-12 space-y-8">
+        {% for p in phases %}
+        <li class="reveal rounded-2xl border border-white/10 bg-slate-900/60 p-6 sm:p-8">
+            <p class="text-sm font-semibold uppercase tracking-wide text-indigo-400">{{ p.tag }}</p>
+            <h3 class="mt-1 text-xl font-semibold">{{ p.title }}</h3>
+            <p class="mt-2 text-slate-300">{{ p.text }}</p>
+        </li>
+        {% endfor %}
+    </ol>
+</section>
+
+<section class="relative overflow-hidden border-t border-white/10">
+    <div data-parallax="0.12" class="parallax pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-indigo-800/20 to-transparent"></div>
+    <div class="mx-auto max-w-4xl px-4 py-20 text-center">
+        <h2 class="reveal text-2xl font-semibold sm:text-3xl">Architecture</h2>
+        <p class="reveal mt-4 text-slate-300">
+            Device portable (ESP32-S3) → backend d’ingestion (Symfony / API
+            Platform / PostgreSQL) → pipeline IA au choix (local ou API).
+            Tout est documenté et réutilisable.
+        </p>
+        <div class="mt-8">
+            <a href="{{ path('app_docs') }}" class="reveal inline-block rounded-md bg-indigo-600 px-5 py-3 font-medium transition-colors hover:bg-indigo-500">Lire la documentation</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
