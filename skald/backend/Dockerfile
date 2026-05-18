@@ -27,7 +27,9 @@ COPY skald/docs/ ./dev-docs/skald/
 
 RUN composer dump-autoload --optimize --no-dev \
     && mkdir -p var/uploads \
-    # 3) Build CSS Tailwind (télécharge le binaire standalone) puis fige les assets.
+    # 3) Régénère les assets vendor JS (gitignorés, absents du clone) \
+    && php bin/console importmap:install \
+    # 4) Build CSS Tailwind (binaire standalone) puis fige les assets. \
     && php bin/console tailwind:build --minify \
     && php bin/console asset-map:compile \
     && chown -R www-data:www-data var public
