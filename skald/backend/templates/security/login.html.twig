@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion — Skald{% endblock %}
+
+{% block body %}
+<main>
+    <h1>Connexion à Skald</h1>
+    <p>Saisissez votre adresse email. Si elle est autorisée, vous recevrez un
+       lien de connexion (valable 15 minutes, à usage unique).</p>
+
+    <form method="post" action="{{ path('app_login_submit') }}">
+        <p>
+            <label for="email">Adresse email</label><br>
+            <input type="email" id="email" name="email" required autocomplete="email" autofocus>
+        </p>
+        <p>
+            <button type="submit">Recevoir le lien de connexion</button>
+        </p>
+    </form>
+</main>
+{% endblock %}
